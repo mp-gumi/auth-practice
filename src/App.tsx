@@ -3,6 +3,7 @@ import { AuthContext } from "./contexts/AuthContext";
 import { auth } from "./firebase";
 import firebase from "firebase/compat/app";
 import Router from "../src/Routes/index";
+import Loading from "./components/Loading";
 
 function App() {
   const [user, setUser] = useState<firebase.User | null>(null);
@@ -19,7 +20,7 @@ function App() {
   return (
     <div>
       <AuthContext.Provider value={{ user, setUser, loading }}>
-        <Router />
+        {loading ? <Loading /> : <Router />}
       </AuthContext.Provider>
     </div>
   );

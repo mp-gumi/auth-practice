@@ -1,6 +1,6 @@
 import { FormEvent, useCallback, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../../firebase";
+import { auth, provider } from "../../firebase";
 import { FirebaseError } from "@firebase/util";
 
 function LoginForm() {
@@ -44,6 +44,25 @@ function LoginForm() {
     [email, navigate, password]
   );
 
+  const handleGoogleLogin = useCallback(async () => {
+    try {
+      await auth.signInWithPopup(provider);
+      navigate("/");
+    } catch (error: unknown) {
+      if (error instanceof FirebaseError) {
+        if (error.code === "auth/invalid-email") {
+          setErrorMessage("メールアドレスが正しくありません");
+        }
+        if (error.code === "auth/wrong-password") {
+          setErrorMessage("パスワードが正しくありません");
+        }
+        if (error.code === "auth/user-not-found") {
+          setErrorMessage("このメールアドレスは登録されていません");
+        }
+      }
+    }
+  }, [navigate]);
+
   return (
     <div>
       <h2>ログイン</h2>
@@ -79,7 +98,17 @@ function LoginForm() {
           )}
         </div>
       </form>
-      ユーザー登録は<Link to={"/signup"}>こちら</Link>から
+      Googleアカウントでのログインは
+      <span
+        onClick={handleGoogleLogin}
+        style={{ color: "blue", textDecoration: "underline" }}
+      >
+        こちら
+      </span>
+      から
+      <div>
+        ユーザー登録は<Link to={"/signup"}>こちら</Link>から
+      </div>
     </div>
   );
 }
