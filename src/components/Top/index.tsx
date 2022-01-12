@@ -1,21 +1,20 @@
 import { auth } from "../../firebase";
-import { useNavigate, Navigate } from "react-router-dom"; //useHistoryの代わりにuseNavigate(v6以降)
+import { useNavigate } from "react-router-dom"; //useHistoryの代わりにuseNavigate(v6以降)
 import { AuthContext } from "../../contexts/AuthContext";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
+import Loading from "../Loading";
 
 function Top() {
-  const { user } = useContext(AuthContext);
-
+  const { loading } = useContext(AuthContext);
   const navigate = useNavigate();
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     auth.signOut();
     navigate("/signin");
-  };
+  }, [navigate]);
 
-  if (!user) {
-    return <Navigate to="/signin" />;
+  if (loading) {
+    return <Loading />;
   }
-
   return (
     <div>
       <h2>Home</h2>
